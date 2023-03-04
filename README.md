@@ -5,7 +5,7 @@
     
 > * Windows: always work since `schtasks` is always available
 > * Linux: work if `at` is installed
-> * MacOS: almost never work on mac since `at` is deprecated there
+> * macOS: almost never work since `at` isn't really supported there
 
 ## Installation
 
