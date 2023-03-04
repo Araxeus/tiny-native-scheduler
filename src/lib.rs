@@ -1,7 +1,4 @@
-use std::{
-    io::{Error, ErrorKind},
-    process::{Command, Output, Stdio},
-};
+use std::process::{Command, Output};
 
 type CustomResult<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -32,41 +29,61 @@ pub fn execute_command_in_x_minutes(
     minutes: i64,
     win_task_name: &str,
 ) -> CustomResult<Output> {
-    let output = if cfg!(windows) {
-        use time::{format_description, Duration, OffsetDateTime};
+    #[cfg(windows)]
+    let output = exec_in_x_minutes_win(command, minutes, win_task_name)?;
+    #[cfg(not(windows))]
+    let output = exec_in_x_minutes_unix(command, minutes)?;
 
-        let scheduled_time = OffsetDateTime::now_local()? + Duration::minutes(minutes);
-        let format = format_description::parse("[hour]:[minute]")?;
+    Ok(output)
+}
 
-        let scheduled_time_string = scheduled_time.format(&format)?;
+#[cfg(windows)]
+use time::{format_description, Duration, OffsetDateTime};
 
-        Command::new("schtasks")
-            .args([
-                "/create",
-                "/tn",
-                win_task_name,
-                "/tr",
-                &format!("cmd /C start \"\" /MIN \"cmd\" \"/C {command}\""),
-                "/sc",
-                "once",
-                "/st",
-                &scheduled_time_string,
-                "/f",
-            ])
-            .output()?
-    } else {
-        let output = Command::new("echo")
-            .arg(command)
-            .stdout(Stdio::piped())
-            .spawn()?
-            .stdout
-            .ok_or_else(|| Error::new(ErrorKind::Other, "'at' failed to read from 'echo'"))?;
+#[cfg(windows)]
+fn exec_in_x_minutes_win(command: &str, minutes: i64, task_name: &str) -> CustomResult<Output> {
+    let scheduled_time = OffsetDateTime::now_local()? + Duration::minutes(minutes);
+    let format = format_description::parse("[hour]:[minute]")?;
 
-        Command::new("at")
-            .args(["now", "+", &minutes.to_string(), "minute"])
-            .stdin(Stdio::from(output))
-            .output()?
-    };
+    let scheduled_time_string = scheduled_time.format(&format)?;
+
+    let output = Command::new("schtasks")
+        .args([
+            "/create",
+            "/tn",
+            task_name,
+            "/tr",
+            &format!("cmd /C start \"\" /MIN \"cmd\" \"/C {command}\""),
+            "/sc",
+            "once",
+            "/st",
+            &scheduled_time_string,
+            "/f",
+        ])
+        .output()?;
+
+    Ok(output)
+}
+
+#[cfg(not(windows))]
+use std::{
+    io::{Error, ErrorKind},
+    process::Stdio,
+};
+
+#[cfg(not(windows))]
+fn exec_in_x_minutes_unix(command: &str, minutes: i64) -> CustomResult<Output> {
+    let output = Command::new("echo")
+        .arg(command)
+        .stdout(Stdio::piped())
+        .spawn()?
+        .stdout
+        .ok_or_else(|| Error::new(ErrorKind::Other, "'at' failed to read from 'echo'"))?;
+
+    let output = Command::new("at")
+        .args(["now", "+", &minutes.to_string(), "minute"])
+        .stdin(Stdio::from(output))
+        .output()?;
 
     Ok(output)
 }
