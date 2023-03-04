@@ -2,6 +2,10 @@
 
 -   This is a tiny native scheduler for the [Rust](https://www.rust-lang.org/) programming language.
     It uses [schtasks](https://technet.microsoft.com/en-us/library/cc725744.aspx) to schedule tasks on Windows. and [at](<https://en.wikipedia.org/wiki/At_(Unix)>) on Unix.
+    
+> * Windows: always work since `schtasks` is always available
+> * Linux: work if `at` is installed
+> * MacOS: almost never work on mac since `at` is deprecated there
 
 ## Installation
 
