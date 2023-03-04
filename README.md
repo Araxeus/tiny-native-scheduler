@@ -15,8 +15,6 @@ Or add this to your `Cargo.toml`:
 tiny_scheduler = "0.1.0"
 ```
 
-
-
 ## Usage
 
 ```rust
@@ -37,6 +35,7 @@ Execute a command in x minutes using `at` or `schtasks` depending on the OS.
 
 -   `command` - The command to execute.
 -   `minutes` - The amount of minutes to wait before executing the command.
+-   `win_task_name` - The name of the task to create on Windows.
 
 #### Example
 

@@ -13,6 +13,7 @@ type CustomResult<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 ///
 /// * `command` - The command to execute.
 /// * `minutes` - The amount of minutes to wait before executing the command.
+/// * `win_task_name` - The name of the task to create on Windows.
 ///
 /// # Example
 ///
@@ -26,7 +27,11 @@ type CustomResult<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 ///
 /// This function will return an error if the command fails to execute.
 ///
-pub fn execute_command_in_x_minutes(command: &str, minutes: i64) -> CustomResult<Output> {
+pub fn execute_command_in_x_minutes(
+    command: &str,
+    minutes: i64,
+    win_task_name: &str,
+) -> CustomResult<Output> {
     let output = if cfg!(windows) {
         use time::{format_description, Duration, OffsetDateTime};
 
@@ -39,7 +44,7 @@ pub fn execute_command_in_x_minutes(command: &str, minutes: i64) -> CustomResult
             .args([
                 "/create",
                 "/tn",
-                "Upgrade cargo-update",
+                win_task_name,
                 "/tr",
                 &format!("cmd /C start \"\" /MIN \"cmd\" \"/C {command}\""),
                 "/sc",
