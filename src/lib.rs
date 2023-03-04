@@ -27,7 +27,7 @@ type CustomResult<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 pub fn execute_command_in_x_minutes(
     command: &str,
     minutes: i64,
-    win_task_name: &str,
+    #[allow(unused_variables)] win_task_name: &str,
 ) -> CustomResult<Output> {
     #[cfg(windows)]
     let output = exec_in_x_minutes_win(command, minutes, win_task_name)?;
