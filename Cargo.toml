@@ -1,0 +1,17 @@
+[package]
+authors = ["Araxeus"]
+categories = ["command-line-utilities"]
+description = "Tiny helper to schedule tasks to run at a specific time using `at` on Unix and `schtasks` on Windows."
+edition = "2021"
+homepage = "https://github.com/Araxeus/tiny-native-scheduler"
+keywords = ["scheduler", "at", "schtasks", "later"]
+license = "MIT"
+name = "tiny-native-scheduler"
+readme = "README.md"
+repository = "https://github.com/Araxeus/tiny-native-scheduler"
+version = "0.1.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[target.'cfg(windows)'.dependencies]
+time = {version = "0.3", features = ["local-offset", "formatting"]}

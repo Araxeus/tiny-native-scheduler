@@ -1,2 +1,51 @@
 # tiny native scheduler
- tiny rust crate/helper
+
+-   This is a tiny native scheduler for the [Rust](https://www.rust-lang.org/) programming language.
+    It uses [schtasks](https://technet.microsoft.com/en-us/library/cc725744.aspx) to schedule tasks on Windows. and [at](<https://en.wikipedia.org/wiki/At_(Unix)>) on Unix.
+
+## Installation
+
+```bash
+cargo install tiny_scheduler
+```
+Or add this to your `Cargo.toml`:
+
+```toml
+[dependencies]
+tiny_scheduler = "0.1.0"
+```
+
+
+
+## Usage
+
+```rust
+use tiny_scheduler::execute_command_in_x_minutes;
+
+fn main() {
+    execute_command_in_x_minutes("cargo install tiny_scheduler", 2);
+}
+```
+
+## Documentation
+
+### `execute_command_in_x_minutes`
+
+Execute a command in x minutes using `at` or `schtasks` depending on the OS.
+
+#### Arguments
+
+-   `command` - The command to execute.
+-   `minutes` - The amount of minutes to wait before executing the command.
+
+#### Example
+
+```rust
+use execute_command_in_x_minutes::execute_command_in_x_minutes;
+
+execute_command_in_x_minutes("cargo install cargo-update", 5).unwrap();
+```
+
+#### Errors
+
+This function will return an error if the command fails to execute.
