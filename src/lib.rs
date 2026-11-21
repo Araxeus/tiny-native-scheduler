@@ -66,10 +66,7 @@ fn exec_in_x_minutes_win(command: &str, minutes: i64, task_name: &str) -> Custom
 }
 
 #[cfg(not(windows))]
-use std::{
-    io::{Error, ErrorKind},
-    process::Stdio,
-};
+use std::{io::Error, process::Stdio};
 
 #[cfg(not(windows))]
 fn exec_in_x_minutes_unix(command: &str, minutes: i64) -> CustomResult<Output> {
@@ -78,7 +75,7 @@ fn exec_in_x_minutes_unix(command: &str, minutes: i64) -> CustomResult<Output> {
         .stdout(Stdio::piped())
         .spawn()?
         .stdout
-        .ok_or_else(|| Error::new(ErrorKind::Other, "'at' failed to read from 'echo'"))?;
+        .ok_or_else(|| Error::other("'at' failed to read from 'echo'"))?;
 
     let output = Command::new("at")
         .args(["now", "+", &minutes.to_string(), "minute"])
